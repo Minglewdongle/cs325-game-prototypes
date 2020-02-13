@@ -32,7 +32,6 @@ window.onload = function() {
     var wet=false;
     var platforms;
     var ice;
-    var 
     function create() {
 
         game.add.sprite(0,0,'sunrise');

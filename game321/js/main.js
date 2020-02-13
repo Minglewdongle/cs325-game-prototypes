@@ -123,10 +123,9 @@ window.onload = function() {
             wet=false;
 
             //only one fire in the game so players win when it's put out.
-            var style = { font: "15px Verdana", fill: "#9999ff", align: "center" };    
             
-        game.add.text(game.world.centerX,game.world.centerY, 'You stopped the fire!', font: "30px Verdana", fill: "#9999ff", align: "center");
-        
+        game.add.text(game.world.centerX,game.world.centerY, 'You stopped the fire!');
     }
+
     }
 };

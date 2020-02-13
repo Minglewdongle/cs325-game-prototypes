@@ -16,10 +16,12 @@ window.onload = function() {
     function preload() {
         // Load an image and call it 'logo'.
         game.load.image( 'marsh', 'assets/Marsh.png' );
+        game.load.image( 'wet_marsh', 'assets/Marsh.png' );
         game.load.image( 'sunrise', 'assets/sunset.png' );
         game.load.image( 'ice', 'assets/ice.png' );
         game.load.image( 'fire', 'assets/fire.gif');
         game.load.image( 'water', 'assets/tex_Water.jpg');
+        game.load.image('ground', 'assets/ground.png');
     }
     
     var bouncy;
@@ -27,41 +29,42 @@ window.onload = function() {
     var player;
     var input;
     var fire;
-
-    var winText;
+    var wet=false;
+    var platforms;
+    var ice;
+    var 
     function create() {
 
-        room=game.add.tileSprite(0,0,800,600,'sunrise');
+        game.add.sprite(0,0,'sunrise');
+        ice=game.add.group();
+        platforms.enableBody=true;
+
+        platforms=game.add.group();
+        platforms.enableBody=true;
+        var ground = platforms.create(0, game.world.height - 64, 'ground');
+        ground.scale.setTo(2,2);
+
+        ground.body.immovable = true;
+        var ledge = platforms.create(400, 400, 'ground');
+        ledge.body.immovable = true;
+        ledge = platforms.create(-150, 250, 'ground');
+        ledge.body.immovable = true;
+
+
         player=game.add.sprite(game.world.centerX-400,game.world.centerY=+200,'marsh');
-        game.physics.enable(player, Phaser.Physics.ARCADE);
+        game.physics.arcade.enable(player);
         input=game.input.keyboard.createCursorKeys();
         player.body.collideWorldBounds=true;
-        fire=game.add.sprite(game.world.centerX-100,game.world.centerY=+200,'fire');
-        ice=game.add.sprite(game.world.centerX -200,game.world.centerY=+200,'ice');
+        
+        player.body.bounce.y = 0.2;
+        player.body.gravity.y = 300;
+
+        fire=game.add.sprite(-130, 250,'fire');
+
         water=game.add.sprite(game.world.centerX ,game.world.centerY=+200,'water');
         
-
-
-        winText= game.add.text(game.world.centerX,game.world.centerY, 'You stopped the fire!', font: "30px Verdana", fill: "#9999ff", align: "center");
-
-
-
-
-        // Create a sprite at the center of the screen using the 'logo' image.
-        bouncy = game.add.sprite( game.world.centerX, game.world.centerY, 'marsh' );
-        // Anchor the sprite at its center, as opposed to its top-left corner.
-        // so it will be truly centered.
-        bouncy.anchor.setTo( 0.5, 0.5 );
-        
-        // Turn on the arcade physics engine for this sprite.
-        game.physics.enable( bouncy, Phaser.Physics.ARCADE );
-        // Make it bounce off of the world bounds.
-        bouncy.body.collideWorldBounds = true;
-        
-        // Add some text using a CSS style.
-        // Center it in X, and position its top 15 pixels from the top of the world.
-        var style = { font: "25px Verdana", fill: "#9999ff", align: "center" };
-        var text = game.add.text( game.world.centerX, 15, "Build something amazing.", style );
+        var style = { font: "15px Verdana", fill: "#9999ff", align: "center" };
+        var text = game.add.text( game.world.centerX, 15, "Gotta Put Out The Fire!", style );
         text.anchor.setTo( 0.5, 0.0 );
     }
     
@@ -71,8 +74,60 @@ window.onload = function() {
         // in X or Y.
         // This function returns the rotation angle that makes it visually match its
         // new trajectory.
-        bouncy.rotation = game.physics.arcade.accelerateToPointer( bouncy, game.input.activePointer, 500, 500, 500 );
+        
+    var hitPlatform = game.physics.arcade.collide(player, platforms);
+
+    if(input.down.isDown){
+        player.body.velocity.y=200;
+    }  
+    if(input.left.isDown){
+    player.body.velocity.x=80;
+    }
+    if(input.right.isDown){
+    player.body.velocity.x=80;
+    }
+    else{
+        player.animations.stop();
+        player.frame = 4;
+    }
+    
+    if (cursors.up.isDown && player.body.touching.down && hitPlatform)
+    {
+        player.body.velocity.y = -250;
+    }
+
+
+    game.physics.arcade.overlap(player, water,inWater,null,this);
+    game.physics.arcade.overlap(player, ice, onIce,null,this);
+    game.physics.arcade.overlap(player,fire, onFire,null,this);
     
     
+
+    }
+    function inWater(){
+        wet=true;
+        player.sprite='wet_marsh';
+    }
+    function onIce(){
+        player.kill();
+        ice.create(player.x, player.y, 'ice');
+        player=game.add.sprite(game.world.centerX-400,game.world.centerY=+200,'marsh');
+        wet=false;
+    }
+    function onFire(){
+        if(wet==false){
+        player.kill();
+        player=game.add.sprite(game.world.centerX-400,game.world.centerY=+200,'marsh');
+        }
+        else{
+            fire.kill();
+            wet=false;
+
+            //only one fire in the game so players win when it's put out.
+            var style = { font: "15px Verdana", fill: "#9999ff", align: "center" };    
+            
+        game.add.text(game.world.centerX,game.world.centerY, 'You stopped the fire!', font: "30px Verdana", fill: "#9999ff", align: "center");
+        
+    }
     }
 };

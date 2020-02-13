@@ -36,9 +36,10 @@ window.onload = function() {
 
         game.add.sprite(0,0,'sunrise');
         ice=game.add.group();
+        
+        platforms=game.add.group();
         platforms.enableBody=true;
 
-        platforms=game.add.group();
         platforms.enableBody=true;
         var ground = platforms.create(0, game.world.height - 64, 'ground');
         ground.scale.setTo(2,2);
@@ -55,7 +56,6 @@ window.onload = function() {
         input=game.input.keyboard.createCursorKeys();
         player.body.collideWorldBounds=true;
         
-        player.body.bounce.y = 0.2;
         player.body.gravity.y = 300;
 
         fire=game.add.sprite(-130, 250,'fire');
@@ -80,14 +80,10 @@ window.onload = function() {
         player.body.velocity.y=200;
     }  
     if(input.left.isDown){
-    player.body.velocity.x=80;
+    player.body.velocity.x=-80;
     }
     if(input.right.isDown){
     player.body.velocity.x=80;
-    }
-    else{
-        player.animations.stop();
-        player.frame = 4;
     }
     
     if (cursors.up.isDown && player.body.touching.down && hitPlatform)

@@ -51,7 +51,7 @@ window.onload = function() {
         ledge.body.immovable = true;
 
 
-        player=game.add.sprite(game.world.centerX-400,game.world.centerY=+200,'marsh');
+        player=game.add.sprite(game.world.centerX-400,game.world.centerY+200,'marsh');
         game.physics.arcade.enable(player);
         input=game.input.keyboard.createCursorKeys();
         player.body.collideWorldBounds=true;
@@ -60,7 +60,7 @@ window.onload = function() {
 
         fire=game.add.sprite(-130, 250,'fire');
 
-        water=game.add.sprite(game.world.centerX ,game.world.centerY=+200,'water');
+        water=game.add.sprite(game.world.centerX ,game.world.centerY+200,'water');
         
         var style = { font: "15px Verdana", fill: "#9999ff", align: "center" };
         var text = game.add.text( game.world.centerX, 15, "Gotta Put Out The Fire!", style );

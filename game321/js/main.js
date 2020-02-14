@@ -17,54 +17,63 @@ window.onload = function() {
         // Load an image and call it 'logo'.
         game.load.image( 'marsh', 'assets/Marsh.png' );
         game.load.image( 'wet_marsh', 'assets/Marsh.png' );
-        game.load.image( 'sunrise', 'assets/sunset.png' );
+        game.load.image( 'sunrise', 'assets/sunrise.png' );
         game.load.image( 'ice', 'assets/ice.png' );
         game.load.image( 'fire', 'assets/fire.gif');
         game.load.image( 'water', 'assets/tex_Water.jpg');
         game.load.image('ground', 'assets/ground.png');
+        game.load.image('ground3', 'assets/ground3.png');
     }
     
     var bouncy;
     
     var player;
     var input;
-    var fire;
+    var star;
+    var water;
     var wet=false;
     var platforms;
     var ice;
     function create() {
 
         game.add.sprite(0,0,'sunrise');
+        
         ice=game.add.group();
         
         platforms=game.add.group();
         platforms.enableBody=true;
 
-        platforms.enableBody=true;
-        var ground = platforms.create(0, game.world.height - 64, 'ground');
-        ground.scale.setTo(2,2);
 
+
+        var ground = platforms.create(0, game.world.height - 30, 'ground3');
+        ground.scale.setTo(10,1/2);
         ground.body.immovable = true;
-        var ledge = platforms.create(400, 400, 'ground');
-        ledge.body.immovable = true;
-        ledge = platforms.create(-150, 250, 'ground');
-        ledge.body.immovable = true;
 
+        var ledge = platforms.create(400, 400, 'ground3');
+        ledge.body.immovable = true;
+        ledge.scale.setTo(2,1/2);
+        var ledge = platforms.create(0, 300, 'ground3');
+        ledge.body.immovable = true;
+        
 
-        player=game.add.sprite(game.world.centerX-400,game.world.centerY+200,'marsh');
+        player=game.add.sprite(game.world.centerX,game.world.centerY,'marsh');
         game.physics.arcade.enable(player);
         input=game.input.keyboard.createCursorKeys();
         player.body.collideWorldBounds=true;
+        player.body.gravity.y = 140;  
+        player.body.velocity.y=-1;
+        player.scale.setTo(1/2,1/2); 
+        player.body.bounce.set(0,1.2);    
         
-        player.body.gravity.y = 300;
-
-        fire=game.add.sprite(-130, 250,'fire');
-
-        water=game.add.sprite(game.world.centerX ,game.world.centerY+200,'water');
-        
-        var style = { font: "15px Verdana", fill: "#9999ff", align: "center" };
-        var text = game.add.text( game.world.centerX, 15, "Gotta Put Out The Fire!", style );
+        star=game.add.group();
+        star.create(0, 0,'fire');
+        star.scale.setTo(5,5);
+        /*water=game.add.sprite(game.world.centerX ,game.world.centerY,'water');*/
+        /*var style = { font: "15px Verdana", fill: "#9999ff", align: "center" };
+        var text = game.add.text( game.world.centerX, 15, "Gotta Put Out The Star!", style );
         text.anchor.setTo( 0.5, 0.0 );
+
+        */
     }
     
     function update() {
@@ -77,50 +86,56 @@ window.onload = function() {
     var hitPlatform = game.physics.arcade.collide(player, platforms);
 
     if(input.down.isDown){
-        player.body.velocity.y=200;
+        player.body.velocity.y=150;
     }  
     if(input.left.isDown){
-    player.body.velocity.x=-80;
+    player.body.velocity.x=-150;
     }
     if(input.right.isDown){
-    player.body.velocity.x=80;
+    player.body.velocity.x=150;
     }
+    if(!(input.right.isDown||input.left.isDown)){
+        player.body.velocity.x=0;
+        }
     
-    if (cursors.up.isDown && player.body.touching.down && hitPlatform)
-    {
-        player.body.velocity.y = -250;
+    if (input.up.isDown && player.body.touching.down && hitPlatform){
+        player.body.velocity.y = -150;
     }
-
-
+    if(player.body.velocity.y>200){
+        player.body.velocity.y=200;
+    }
+/*
     game.physics.arcade.overlap(player, water,inWater,null,this);
-    game.physics.arcade.overlap(player, ice, onIce,null,this);
-    game.physics.arcade.overlap(player,fire, onFire,null,this);
-    
+    game.physics.arcade.overlap(player, ice, onIce,null,this);*/
+    game.physics.arcade.overlap(player,star, onStar,null,this);
     
 
     }
+
+    /*
     function inWater(){
         wet=true;
-        player.sprite='wet_marsh';
+        player.loadTexture('wet_marsh');
     }
     function onIce(){
         player.kill();
         ice.create(player.x, player.y, 'ice');
         player=game.add.sprite(game.world.centerX-400,game.world.centerY=+200,'marsh');
         wet=false;
-    }
-    function onFire(){
-        if(wet==false){
+    }*/
+
+    function onStar(){
+        if(!wet){
         player.kill();
         player=game.add.sprite(game.world.centerX-400,game.world.centerY=+200,'marsh');
         }
         else{
-            fire.kill();
+            star.kill();
             wet=false;
 
             //only one fire in the game so players win when it's put out.
             
-        game.add.text(game.world.centerX,game.world.centerY, 'You stopped the fire!');
+        game.add.text(game.world.centerX,game.world.centerY, 'You stopped the star!');
     }
 
     }

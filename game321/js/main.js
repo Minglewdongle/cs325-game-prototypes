@@ -21,8 +21,12 @@ window.onload = function() {
         game.load.image( 'ice', 'assets/ice.png' );
         game.load.image( 'fire', 'assets/fire.gif');
         game.load.image( 'water', 'assets/tex_Water.jpg');
-        game.load.image('ground', 'assets/ground.png');
         game.load.image('ground3', 'assets/ground3.png');
+
+        game.load.audio('bounce', 'assets/bounce.mp3');
+        game.load.audio('splash', 'assets/splash.mp3');
+        game.load.audio('flame', 'assets/flame.mp3');
+        
     }
     
     
@@ -34,10 +38,15 @@ window.onload = function() {
     var platforms;
     var text;
     var firenum=3;
+    var bounce;
+    var splash;
+    var flame;
     var ice;
     function create() {
-        wet=false;
-        game.add.sprite(0,0,'sunrise');
+        bounce=game.add.audio('bounce');
+        splash=game.add.audio('splash');
+        flame=game.add.audio('flame');
+   game.add.sprite(0,0,'sunrise');
         
         ice=game.add.group();
         
@@ -117,10 +126,14 @@ window.onload = function() {
     if(!(input.right.isDown||input.left.isDown)){
         player.body.velocity.x=0;
         }
-    
-    if (input.up.isDown && player.body.touching.down && hitPlatform){
-        player.body.velocity.y = -150;
-    }
+    if(hitPlatform && (player.body.touching.down||player.body.touching.up)){
+            if (input.up.isDown){
+                player.body.velocity.y = -150;
+            }
+            if (!input.down.isDown){
+            bounce.play();
+            }
+        }
     if(player.body.velocity.y>200){
         player.body.velocity.y=200;
     }
@@ -134,8 +147,11 @@ window.onload = function() {
 
 
     function inWater(){
+        if(!wet){
         wet=true;
         player.loadTexture('wet_marsh');
+        }
+        splash.play();
     }
 
     /*
@@ -147,6 +163,7 @@ window.onload = function() {
     }*/
 
     function onStar(player,star){
+        flame.play();
         if(!wet){
         player.kill();
        createPlayer();
@@ -159,7 +176,7 @@ window.onload = function() {
             //only one fire in the game so players win when it's put out.
             text.kill();
             if(firenum==0){
-        game.add.text(game.world.centerX, 15, 'You stopped the Fire!');
+        game.add.text(game.world.centerX, 15, 'You stopped the fires!');
             }
     }
     }

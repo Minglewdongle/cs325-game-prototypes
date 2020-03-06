@@ -35,6 +35,7 @@ window.onload = function() {
     var player;
     var input;
     var chicken;
+    var bg=7236;
     var platforms;
     var text;
     var choco;
@@ -50,9 +51,10 @@ window.onload = function() {
     var gw;
     var right='hero3';
     var left='hero6';
+    var total;
+    var sp=200;
     function create() {
         
-        createPlayer();  
         choco=game.add.audio('choco');
         cry=game.add.audio('cry');
         choco.loopFull();
@@ -64,22 +66,25 @@ window.onload = function() {
         chicken.enableBody = true;
         gh=game.world.height-64;
         gw=game.world.width-64;
+        total=[]
         for(var i=0; i<chickennum;i++){
             var either=Math.floor(Math.random()*2);
             if(either==1){
                 either+=1;}
             else{
                 either=0;}
-            var chicken2 =chicken.create(Math.random()*gw, Math.random()*gh,'chicken');
+            total.push(chicken.create(Math.random()*gw, Math.random()*gh,'chicken'));
             
         }
+        
+        createPlayer();  
         var style = { font: "15px Verdana", fill: "#9999ff", align: "center" };
         text = game.add.text( game.world.centerX, 15, "Destroy all 100 Chickens!", style );
         text.anchor.setTo( 0.5, 0.0 );
 
-        time = game.add.text(70, 20, 'Timer: 0', { font: "30px Arial", fill: "#ffffff", align: "center" });
+        time = game.add.text(110, 20, 'Timer: 0', { font: "30px Arial", fill: "#ffffff", align: "center" });
         time.anchor.setTo(0.5, 0.5);
-        chickencount = game.add.text(100, 50, 'Chickens left: 100', { font: "20px Arial", fill: "#ffffff", align: "center" });
+        chickencount = game.add.text(140, 50, 'Chickens left: 100', { font: "20px Arial", fill: "#ffffff", align: "center" });
         chickencount.anchor.setTo(0.5, 0.5);
         game.time.events.loop(Phaser.Timer.SECOND, updateCounter, this);
          
@@ -97,23 +102,24 @@ window.onload = function() {
     
     player.loadTexture('hero1');
     if(input.down.isDown){
-        player.body.velocity.y=200;
+        player.body.velocity.y=sp;
 
     }  
     if(input.up.isDown){
-        player.body.velocity.y=-200;
+        player.body.velocity.y=-1*sp;
     }  
     
     if(input.right.isDown){
-    player.body.velocity.x=200;
+    player.body.velocity.x=sp;
         player.loadTexture(right);
     
     }
     if(input.left.isDown){
-        player.body.velocity.x=-200;
+        player.body.velocity.x=-1*sp;
         player.loadTexture(left);
         }
-        game.physics.arcade.overlap(player,chicken, onChicken,null,this);
+        if(timecon){
+        game.physics.arcade.overlap(player,chicken, onChicken,null,this);}
         game.physics.arcade.overlap(player,Gchicken, onGchicken,null,this);
    /*     if(space.isDown){
             if(player.body.velocity.x>0)
@@ -134,21 +140,55 @@ window.onload = function() {
         chickencount.setText('Chickens left: ' + chickennum);
 
             if(chickennum==0){
+                chickencount.kill();
                 text.kill();
-                Gchicken.create(game.world.centerX,game.world.centerY,'Gchicken');
-                timecon=false;
-        game.add.text(game.world.centerX, 15, 'You stopped the chickens!');
+                Gchicken.create(Math.random()*gw, Math.random()*gh,'Gchicken');
         }
     }
     function onGchicken(player,Gchicken){
+        sp+=50;
+        game.add.text(game.world.centerX-30, 15, 'You Obtained the Myforce!');
+        if(timecon==false){
+            game.add.text(game.world.centerX-30, game.world.centerY, 'Welcome to Cucheaven');
+         
+        }
         left='hero5'
         right='hero2'
+        timecon=false;
         Gchicken.kill();
     }
     function updateCounter() {
-        if(timecon){
+        
         counter++;
-        time.setText('Time: ' + counter);}
+        if(timecon){
+        time.setText('Time: ' + counter);
+    }
+        /*bg-=5;
+        game.stage.backgroundColor ='#00'+bg;*/
+        if(counter==15){
+            game.stage.backgroundColor ='#809727'
+        }
+        if(counter==25){
+            game.stage.backgroundColor ='#ff0000'
+        }
+        else if(counter==40){
+            game.stage.backgroundColor ='#000000'
+            chickencount.kill();
+            timecon=false;
+        }
+        else if(counter==50){
+            game.stage.backgroundColor ='#eef028'
+            var len=total.length;
+            for(var i=0;i<len;i++){
+                total.pop().kill();
+            }
+            for(var i=0; i<chickennum;i++){
+                Gchicken.create(Math.random()*gw, Math.random()*gh,'Gchicken');
+                time.setText('Time: INFINITE');
+                text.kill();
+            }
+        }
+  
     
     }
     function createPlayer(){

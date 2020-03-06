@@ -79,7 +79,7 @@ window.onload = function() {
         
         createPlayer();  
         var style = { font: "15px Verdana", fill: "#9999ff", align: "center" };
-        text = game.add.text( game.world.centerX, 15, "Destroy all 100 Chickens!", style );
+        text = game.add.text( game.world.centerX, 15, "Devour all 100 Chickens!", style );
         text.anchor.setTo( 0.5, 0.0 );
 
         time = game.add.text(110, 20, 'Timer: 0', { font: "30px Arial", fill: "#ffffff", align: "center" });

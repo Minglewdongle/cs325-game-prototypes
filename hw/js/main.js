@@ -84,6 +84,7 @@ window.onload = function() {
             left: game.input.keyboard.addKey(Phaser.Keyboard.A),
             up: game.input.keyboard.addKey(Phaser.Keyboard.W),
             down: game.input.keyboard.addKey(Phaser.Keyboard.S),
+            menu: game.input.keyboard.addKey(Phaser.Keyboard.Z),
             interact: game.input.keyboard.addKey(Phaser.Keyboard.X),
             cancel: game.input.keyboard.addKey(Phaser.Keyboard.C),
         }
@@ -96,7 +97,7 @@ window.onload = function() {
         Gchicken=game.add.group();
         Gchicken.enableBody = true;
         input=game.input.keyboard.createCursorKeys();
-        space= game.input.keyboard.addKey(65);
+        /*space= game.input.keyboard.addKey(Phaser.Keyboard.SPACE);*/
         chicken=game.add.group();
         chicken.enableBody = true;
         total=[]
@@ -151,7 +152,7 @@ window.onload = function() {
     
 
     move();
-    if(controls.cancel.isDown){
+    if(controls.menu.isDown){
         /*            
            [name, lvl, hp, str, mag, def, spd, sprite]
             this.sprite=game.add.sprite(game.world.centerX,game.world.centerY,[]]);
@@ -163,6 +164,14 @@ window.onload = function() {
         else{
             game.paused=true;
         }
+    }    
+    if(controls.cancel.isDown){
+        /*            
+           [name, lvl, hp, str, mag, def, spd, sprite]
+            this.sprite=game.add.sprite(game.world.centerX,game.world.centerY,[]]);
+            this.moves=[];
+        */
+        let obj =new Creature(['teeto',1,100,100,100,100,100,'teeto']);
     }
         
         if(timecon){
@@ -182,6 +191,11 @@ window.onload = function() {
 
     //listener
     game.input.onDown.add(unpause, self);
+
+
+
+
+
 
     //movement control
     function move(){

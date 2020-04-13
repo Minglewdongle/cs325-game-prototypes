@@ -22,18 +22,29 @@ window.onload = function() {
             this.spd=info[6];
             this.sprite=game.add.sprite(game.world.centerX,game.world.centerY,info[7]);
             this.moves=[];
-    
+            this.currentHP=this.hp;
+            this.maxStats=[this.hp,this.currentHP,this.str,this.mag,this.def,this.spd];
             this.currentStats=[this.hp,this.CurrentHP,this.str,this.mag,this.def,this.spd];
+            
             this.exp=(this.lvl*this.lvl);
             
             this.expCondition=0
             this.lvl-=1;
             this.levelUp();
+            var quart=(this.sprite.centerX-this.sprite.x)/2
+            this.display= game.add.text(this.sprite.x+quart, this.sprite.y, 'hp: '.concat(String(this.currentStats[0])).concat("/").concat(String(this.currentStats[1])), { font: "30px Arial", fill: "#ffffff", align: "center" });
+            this.display= game.add.text(this.sprite.x+quart, this.sprite.y-30, 'str: '.concat(String(this.currentStats[2])), { font: "30px Arial", fill: "#ffffff", align: "left" });
+            this.display= game.add.text(this.sprite.x+quart, this.sprite.y-60, 'mag: '.concat(String(this.currentStats[3])), { font: "30px Arial", fill: "#ffffff", align: "left" });
+            this.display= game.add.text(this.sprite.x+quart, this.sprite.y-90, 'def: '.concat(String(this.currentStats[4])), { font: "30px Arial", fill: "#ffffff", align: "left" });
+            this.display= game.add.text(this.sprite.x+quart, this.sprite.y-120, 'spd: '.concat(String(this.currentStats[5])), { font: "30px Arial", fill: "#ffffff", align: "left" });
+
+            //this.display= game.add.text(this.sprite.x, this.sprite.y-150, 'hp: '.concat(String(this.hp)), { font: "30px Arial", fill: "#ffffff", align: "center" });
+            
         }
         levelUp(){
             this.lvl+=1;
             for(var i=0;i<this.currentStats.length;i+=1){
-                this.currentStats[i]=this.currentStats[i]/(100-this.lvl);
+                this.currentStats[i]=Math.ceil(this.maxStats[i]/(100-this.lvl));
             }
             this.expCondition=((this.lvl+1)*(this.lvl+1));
         }
@@ -61,7 +72,8 @@ window.onload = function() {
     
     var player;
     var input;
-    var Creatures=[];
+    var controls;
+
     var chicken;
     var bg=7236;
     var text;
@@ -69,14 +81,17 @@ window.onload = function() {
     var chickennum=100;
     var Gchicken;
     var cry;
-    var space;
+
+    var Creatures=[];
+    var menu;
+    var menuFunctions;
+
     var time;
     var timecon=true;
     var chickencount;
     var counter=0;
     var total;
     var dir="down";
-    var controls;
     var sp=200;//speed
     function create() {
         controls = {
@@ -88,7 +103,9 @@ window.onload = function() {
             interact: game.input.keyboard.addKey(Phaser.Keyboard.X),
             cancel: game.input.keyboard.addKey(Phaser.Keyboard.C),
         }
-        
+
+
+
         game.world.setBounds(0, 0, 1000, 1000);
         
         choco=game.add.audio('choco');
@@ -133,12 +150,21 @@ window.onload = function() {
         chickencount = game.add.text(140, 50, 'Chickens left: 100', { font: "20px Arial", fill: "#ffffff", align: "center" });
         chickencount.anchor.setTo(0.5, 0.5);
         game.time.events.loop(Phaser.Timer.SECOND, updateCounter, this);
-         
+     
+        //use the onDown signal to add an event
+        controls.menu.onDown.add(unpause);
+        input.right.onDown.add(unpause);
     }
     
-
-
-
+/*
+    window.onkeydown = function() {
+        if(game.input.keyboard.event!=null){
+        if (game.input.keyboard.event.keyCode == controls.cancel){
+            game.paused = !game.paused;
+        }
+    }
+    }
+*/
 
     function update() {
         // Accelerate the 'logo' sprite towards the cursor,
@@ -158,7 +184,7 @@ window.onload = function() {
             this.sprite=game.add.sprite(game.world.centerX,game.world.centerY,[]]);
             this.moves=[];
         */
-        let obj =new Creature(['teeto',1,100,100,100,100,100,'teeto']);
+        let obj =new Creature(['teeto',1,300,150,200,250,300,'teeto']);
         if(game.paused){
             game.paused=false;}
         else{
@@ -170,8 +196,8 @@ window.onload = function() {
            [name, lvl, hp, str, mag, def, spd, sprite]
             this.sprite=game.add.sprite(game.world.centerX,game.world.centerY,[]]);
             this.moves=[];
-        */
-        let obj =new Creature(['teeto',1,100,100,100,100,100,'teeto']);
+        */        
+       let obj =new Creature(['teeto',1,300,150,200,250,300,'teeto']);
     }
         
         if(timecon){
@@ -190,10 +216,6 @@ window.onload = function() {
     }
 
     //listener
-    game.input.onDown.add(unpause, self);
-
-
-
 
 
 
@@ -293,10 +315,34 @@ window.onload = function() {
         player.body.collideWorldBounds=true;
         player.scale.setTo(1/2,1/2);
     }
+
+    function createMenu(){
+
+
+    }
+    function deleteMenu(){
+        
+
+    }
     function unpause(){
-        // Only act if paused
-                // Unpause the game
-                game.paused = false;
+        // pause state of the game
+
+        if(menu!=null){
+            //interact with menu
+
+        }
+        if(controls.menu.isDown){
+            if(!game.paused){
+                //add menu
+                createMenu();
+            }
+            else{
+                //kill menu
+                deleteMenu();
+                menu=null;
+            }
+                game.paused = !game.paused;
+        }
     };
     //tells location of the camera and sprite
     function render() {

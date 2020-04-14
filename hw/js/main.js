@@ -14,29 +14,33 @@ window.onload = function() {
     class Creature{
         constructor(info){
             this.name=info[0];
-            this.lvl=info[1];
-            this.hp=info[2];
-            this.str=info[3];
-            this.mag=info[4];
-            this.def=info[5];
-            this.spd=info[6];
-            this.sprite=game.add.sprite(game.world.centerX,game.world.centerY,info[7]);
+            this.lvl=Math.floor(Math.random() * (info[2]-info[1]))+info[1];
+            //hp, str, mag, def, spd
+
+            var hp=info[3];
+            var str=info[4];
+            var mag=info[5];
+            var def=info[6];
+            var spd=info[7];
+            this.sprite=game.add.sprite(game.world.centerX,game.world.centerY,this.name);
             this.moves=[];
-            this.currentHP=this.hp;
-            this.maxStats=[this.hp,this.currentHP,this.str,this.mag,this.def,this.spd];
-            this.currentStats=[this.hp,this.CurrentHP,this.str,this.mag,this.def,this.spd];
+            this.maxStats=[hp,hp,str,mag,def,spd];
+            this.currentStats=[Math.floor(hp*this.lvl/100),Math.floor(hp*this.lvl/100),Math.floor(str*this.lvl/100),Math.floor(mag*this.lvl/100),Math.floor(def*this.lvl/100),Math.floor(spd*this.lvl/100)];
             
             this.exp=(this.lvl*this.lvl);
             
-            this.expCondition=0
-            this.lvl-=1;
-            this.levelUp();
-            var quart=(this.sprite.centerX-this.sprite.x)/2
+            this.expCondition=0;
+
+
+            var quart=(this.sprite.centerX-this.sprite.x)/2;
+
             this.display= game.add.text(this.sprite.x+quart, this.sprite.y, 'hp: '.concat(String(this.currentStats[0])).concat("/").concat(String(this.currentStats[1])), { font: "30px Arial", fill: "#ffffff", align: "center" });
             this.display= game.add.text(this.sprite.x+quart, this.sprite.y-30, 'str: '.concat(String(this.currentStats[2])), { font: "30px Arial", fill: "#ffffff", align: "left" });
             this.display= game.add.text(this.sprite.x+quart, this.sprite.y-60, 'mag: '.concat(String(this.currentStats[3])), { font: "30px Arial", fill: "#ffffff", align: "left" });
             this.display= game.add.text(this.sprite.x+quart, this.sprite.y-90, 'def: '.concat(String(this.currentStats[4])), { font: "30px Arial", fill: "#ffffff", align: "left" });
             this.display= game.add.text(this.sprite.x+quart, this.sprite.y-120, 'spd: '.concat(String(this.currentStats[5])), { font: "30px Arial", fill: "#ffffff", align: "left" });
+            this.display= game.add.text(this.sprite.x+quart, this.sprite.y-120, 'spd: '.concat(String(this.currentStats[5])), { font: "30px Arial", fill: "#ffffff", align: "left" });
+            this.display= game.add.text(this.sprite.x+quart, this.sprite.y-150, 'lvl: '.concat(String(this.lvl)), { font: "30px Arial", fill: "#ffffff", align: "left" });
 
             //this.display= game.add.text(this.sprite.x, this.sprite.y-150, 'hp: '.concat(String(this.hp)), { font: "30px Arial", fill: "#ffffff", align: "center" });
             
@@ -44,7 +48,7 @@ window.onload = function() {
         levelUp(){
             this.lvl+=1;
             for(var i=0;i<this.currentStats.length;i+=1){
-                this.currentStats[i]=Math.ceil(this.maxStats[i]/(100-this.lvl));
+                this.currentStats[i]=Math.floor(maxStats[i]*lvl/100);
             }
             this.expCondition=((this.lvl+1)*(this.lvl+1));
         }
@@ -92,7 +96,7 @@ window.onload = function() {
     var counter=0;
     var total;
     var dir="down";
-    var sp=200;//speed
+    var sp=250;//speed
     function create() {
         controls = {
             right: game.input.keyboard.addKey(Phaser.Keyboard.D),
@@ -154,6 +158,8 @@ window.onload = function() {
         //use the onDown signal to add an event
         controls.menu.onDown.add(unpause);
         input.right.onDown.add(unpause);
+
+        let obj =new Creature(['teeto',1,3,300,150,200,250,300]);
     }
     
 /*
@@ -172,19 +178,15 @@ window.onload = function() {
         // in X or Y.
         // This function returns the rotation angle that makes it visually match its
         // new trajectory.
-        
-    player.body.velocity.y=0;
-    player.body.velocity.x=0;
-    
 
     move();
+
     if(controls.menu.isDown){
         /*            
            [name, lvl, hp, str, mag, def, spd, sprite]
             this.sprite=game.add.sprite(game.world.centerX,game.world.centerY,[]]);
             this.moves=[];
         */
-        let obj =new Creature(['teeto',1,300,150,200,250,300,'teeto']);
         if(game.paused){
             game.paused=false;}
         else{
@@ -197,7 +199,7 @@ window.onload = function() {
             this.sprite=game.add.sprite(game.world.centerX,game.world.centerY,[]]);
             this.moves=[];
         */        
-       let obj =new Creature(['teeto',1,300,150,200,250,300,'teeto']);
+       let obj =new Creature(['teeto',1,20,300,150,200,250,300]);
     }
         
         if(timecon){
@@ -221,9 +223,15 @@ window.onload = function() {
 
     //movement control
     function move(){
+        
+        
+        player.body.velocity.y=0;
+        player.body.velocity.x=0;
+
         var contraLR=input.right.isDown&&input.left.isDown;
         var contraUD=input.up.isDown&&input.down.isDown;
         var anyDir=input.right.isDown||input.left.isDown||input.down.isDown||input.up.isDown;
+
         if(!(contraLR)){
             if(input.right.isDown){
             player.body.velocity.x=sp;
@@ -235,6 +243,10 @@ window.onload = function() {
                 player.animations.play('left');
                 dir='left';
             }
+            /*
+            if(player.body.collideWorldBounds){
+                player.body.velocity.x=0;
+            }*/
         }
         if(!(contraUD)){
             if(input.down.isDown){
@@ -248,7 +260,7 @@ window.onload = function() {
                 dir='up';
             } 
         }
-        if((!anyDir)||contraLR||contraUD){
+        if((!anyDir)||contraLR||contraUD||(player.body.velocity.x==0&&player.body.velocity.y==0)){
             player.animations.play(dir.concat('_neutral'));
         }
     }
@@ -313,7 +325,7 @@ window.onload = function() {
         player=game.add.sprite(game.world.centerX,game.world.centerY,'player');
         game.physics.arcade.enable(player);
         player.body.collideWorldBounds=true;
-        player.scale.setTo(1/2,1/2);
+        player.scale.setTo(2/3,2/3);
     }
 
     function createMenu(){

@@ -1,3 +1,6 @@
+//TODO: test moves and add defeat state
+
+
 "use strict";
 window.onload = function() {
     // You can copy-and-paste the code from any of the examples at http://examples.phaser.io here.
@@ -14,49 +17,101 @@ window.onload = function() {
     class Creature{
         constructor(info){
             this.name=info[0];
-            this.lvl=Math.floor(Math.random() * (info[2]-info[1]))+info[1];
+            this.lvl=Math.floor(Math.random() * (info[2]-info[1]+1))+info[1];
+            
             //hp, str, mag, def, spd
-
             var hp=info[3];
             var str=info[4];
             var mag=info[5];
             var def=info[6];
             var spd=info[7];
             this.sprite=game.add.sprite(game.world.centerX,game.world.centerY,this.name);
-            this.moves=[];
+            this.moves=[8];
             this.maxStats=[hp,hp,str,mag,def,spd];
             this.currentStats=[Math.floor(hp*this.lvl/100),Math.floor(hp*this.lvl/100),Math.floor(str*this.lvl/100),Math.floor(mag*this.lvl/100),Math.floor(def*this.lvl/100),Math.floor(spd*this.lvl/100)];
-            
+
             this.exp=(this.lvl*this.lvl);
             
             this.expCondition=0;
 
+            this.alive=true;
 
-            var quart=(this.sprite.centerX-this.sprite.x)/2;
+            var quart=(this.sprite.centerX-this.sprite.x)*2;
 
-            this.display= game.add.text(this.sprite.x+quart, this.sprite.y, 'hp: '.concat(String(this.currentStats[0])).concat("/").concat(String(this.currentStats[1])), { font: "30px Arial", fill: "#ffffff", align: "center" });
-            this.display= game.add.text(this.sprite.x+quart, this.sprite.y-30, 'str: '.concat(String(this.currentStats[2])), { font: "30px Arial", fill: "#ffffff", align: "left" });
-            this.display= game.add.text(this.sprite.x+quart, this.sprite.y-60, 'mag: '.concat(String(this.currentStats[3])), { font: "30px Arial", fill: "#ffffff", align: "left" });
-            this.display= game.add.text(this.sprite.x+quart, this.sprite.y-90, 'def: '.concat(String(this.currentStats[4])), { font: "30px Arial", fill: "#ffffff", align: "left" });
-            this.display= game.add.text(this.sprite.x+quart, this.sprite.y-120, 'spd: '.concat(String(this.currentStats[5])), { font: "30px Arial", fill: "#ffffff", align: "left" });
-            this.display= game.add.text(this.sprite.x+quart, this.sprite.y-120, 'spd: '.concat(String(this.currentStats[5])), { font: "30px Arial", fill: "#ffffff", align: "left" });
-            this.display= game.add.text(this.sprite.x+quart, this.sprite.y-150, 'lvl: '.concat(String(this.lvl)), { font: "30px Arial", fill: "#ffffff", align: "left" });
-
-            //this.display= game.add.text(this.sprite.x, this.sprite.y-150, 'hp: '.concat(String(this.hp)), { font: "30px Arial", fill: "#ffffff", align: "center" });
+            this.display={
+            lvl: game.add.text(this.sprite.x+quart, this.sprite.y, 'lvl: '.concat(this.lvl), { font: "30px Arial", fill: "#ffffff", align: "left" }),
+            hp: game.add.text(this.sprite.x+quart, this.sprite.y+30, 'hp: '.concat(this.currentStats[0]).concat("/").concat(this.currentStats[1]), { font: "30px Arial", fill: "#ffffff", align: "center" }),
+            str: game.add.text(this.sprite.x+quart, this.sprite.y+60, 'str: '.concat(this.currentStats[2]), { font: "30px Arial", fill: "#ffffff", align: "left" }),
+            mag:game.add.text(this.sprite.x+quart, this.sprite.y+90, 'mag: '.concat(this.currentStats[3]), { font: "30px Arial", fill: "#ffffff", align: "left" }),
+            def:game.add.text(this.sprite.x+quart, this.sprite.y+120, 'def: '.concat(this.currentStats[4]), { font: "30px Arial", fill: "#ffffff", align: "left" }),
+            spd:game.add.text(this.sprite.x+quart, this.sprite.y+150, 'spd: '.concat(this.currentStats[5]), { font: "30px Arial", fill: "#ffffff", align: "left" }),
+            exp:game.add.text(this.sprite.x+quart, this.sprite.y+180, 'exp: '.concat(this.exp), { font: "30px Arial", fill: "#ffffff", align: "left" }),
+            }
+            //game.add.text(this.sprite.x, this.sprite.y-150, 'hp: '.concat(this.hp)), { font: "30px Arial", fill: "#ffffff", align: "center" }),
             
         }
         levelUp(){
-            this.lvl+=1;
-            for(var i=0;i<this.currentStats.length;i+=1){
-                this.currentStats[i]=Math.floor(maxStats[i]*lvl/100);
+            if(this.lvl<100){
+                this.lvl+=1;
+                for(var i=0;i<this.currentStats.length;i+=1){
+                    this.currentStats[i]=Math.floor(this.maxStats[i]*this.lvl/100);
+                }
+
+                //change exp condition
+                this.expCondition=((this.lvl+1)*(this.lvl+1));
+                
+                this.display.lvl.setText('lvl: '.concat(this.lvl));
+                this.display.hp.setText( 'hp: '.concat(this.currentStats[0]).concat("/").concat(this.currentStats[1]));
+                this.display.str.setText('str: '.concat(this.currentStats[2]));
+                this.display.mag.setText('mag: '.concat(this.currentStats[3]),);
+                this.display.def.setText('def: '.concat(this.currentStats[4]));
+                this.display.spd.setText('spd: '.concat(this.currentStats[5]));
             }
-            this.expCondition=((this.lvl+1)*(this.lvl+1));
+        }
+        gainExp(gains){
+        this.exp+=gains;
+        this.display.exp.setText('exp: '.concat(this.exp));
+        if(this.exp>=this.expCondition){
+            this.levelUp();
+        }
         }
     }
-    Creature.gainExp=function(gains){
-        this.exp+=gains;
-        if(this.exp>=expCondition){
-            levelUp();
+
+
+    //needs testing
+    class Move{
+        constructor(info){
+            this.name=info[0];
+            this.power=info[1];
+            //physical or magical
+            this.type=info[2];
+
+            this.display={
+                
+            name: game.add.text(0, 0, this.name, { font: "30px Arial", fill: "#ffffff", align: "left" }),
+            power: game.add.text(0, 30, 'power: '.concat(this.power), { font: "30px Arial", fill: "#ffffff", align: "center" }),
+            type: game.add.text(0, 60, 'type: '.concat(this.type), { font: "30px Arial", fill: "#ffffff", align: "left" }),
+            }
+
+        }
+        damage(self,enemy){
+            var  hurt;
+            if(this.type.equals('physical')){
+                hurt=self.currentStats[2]-enemy.currentStats[4];
+            }
+            else{
+                hurt=self.currentStats[3]-enemy.currentStats[3];
+            }
+            if(hurt>0){
+                enemy.currentStats[0]-=Math.ceil(hurt*this.power/100);
+                enemy.display.hp.setText( 'hp: '.concat(this.currentStats[0]).concat("/").concat(this.currentStats[1]));
+                if(enemy.currentStats[0]<=0){
+                    enemy.currentStats[0]=0;
+                    alive=false;
+                    //do something to dead
+
+                }
+            }
         }
     }
 
@@ -97,6 +152,9 @@ window.onload = function() {
     var total;
     var dir="down";
     var sp=250;//speed
+
+    var obj;
+    var enemy;
     function create() {
         controls = {
             right: game.input.keyboard.addKey(Phaser.Keyboard.D),
@@ -158,8 +216,10 @@ window.onload = function() {
         //use the onDown signal to add an event
         controls.menu.onDown.add(unpause);
         input.right.onDown.add(unpause);
-
-        let obj =new Creature(['teeto',1,3,300,150,200,250,300]);
+    
+        var punch=new Move(["punch",60,"physical"]);
+        obj =new Creature(['teeto',1,3,300,150,200,250,300,[punch]]);
+        enemy =new Creature(['teeto',1,3,300,150,200,250,300,[punch]]);
     }
     
 /*
@@ -173,12 +233,6 @@ window.onload = function() {
 */
 
     function update() {
-        // Accelerate the 'logo' sprite towards the cursor,
-        // accelerating at 500 pixels/second and moving no faster than 500 pixels/second
-        // in X or Y.
-        // This function returns the rotation angle that makes it visually match its
-        // new trajectory.
-
     move();
 
     if(controls.menu.isDown){
@@ -199,7 +253,21 @@ window.onload = function() {
             this.sprite=game.add.sprite(game.world.centerX,game.world.centerY,[]]);
             this.moves=[];
         */        
-       let obj =new Creature(['teeto',1,20,300,150,200,250,300]);
+       //let obj =new Creature(['teeto',1,20,300,150,200,250,300]);
+        
+
+       //visibility of display
+       /*obj.display.lvl.visible=false;
+        obj.display.lvl.visible=true;*/
+        
+        //object position
+        //obj.display.lvl.x=0;
+        
+        //creature gains experience
+        //obj.gainExp(obj.expCondition);
+
+        //damage using attack
+        obj.moves[0].damage(obj,enemy);
     }
         
         if(timecon){
@@ -217,14 +285,28 @@ window.onload = function() {
         }*/
     }
 
-    //listener
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
     //movement control
-    function move(){
-        
-        
+    function move(){        
         player.body.velocity.y=0;
         player.body.velocity.x=0;
 
@@ -293,7 +375,7 @@ window.onload = function() {
         counter++;
         if(timecon){
         time.setText('Time: ' + counter);
-    }
+    
         /*bg-=5;
         game.stage.backgroundColor ='#00'+bg;*/
         if(counter==15){
@@ -319,6 +401,7 @@ window.onload = function() {
                 text.kill();
             }
         }
+    }
     }
 
     function createPlayer(){

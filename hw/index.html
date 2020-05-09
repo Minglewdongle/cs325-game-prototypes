@@ -26,21 +26,22 @@ body
 	Goetia
 <ul>
 <li><strong>Originality:</strong><br />
-An RPG where you travel and befriend monsters.
+An Shooter where you travel and befriend monsters.
 </li>
 
 <li><strong>Technical Merit:</strong>
     <p>
-		The mechanic of recruitment is limited to once per monster. The recruitment of
-		mmonsters is free, but the limitation forces the player to be cautious of when 
-		they should use it. The player will be given the option to fight/recruit the 
-		enemies and killing the enemy.
+		The mechanic of enemies chasing you and killing them over time.
 		<p>
 	</li>
 
 <li><strong>Prototype Postmortem:</strong>
-    <p>I have learned how to manipulate the camera, pause the game and create/use classes. 
-		The groundwork has been set up and what remains is to create the GUI.</p>
+    <p>I have bettered my understanding on how to control time in game and manipulate the pause state. The sprite now moves more fluidly and the
+		chickens follow the player. The speed of the chickens are now constant by using their vectors to determine the x and y velocities. There 
+		are now icons which represent the abilites being used. The abilities can be used again when the icons re-appear. Projectiles that aren't 
+		stationary will despawn when the camera is out of range. 
+
+	</p>
 
 </li>
 
@@ -54,17 +55,21 @@ I made the sprites/spritesheets.
 <li>
 
 </li>
+<a href="https://opengameart.org/content/electricity-sound-effects">Electricity</a>
+<li>
+
+</li>
 
 <li><strong>Prototype Closest Other Game:</strong><br />
 	Pokemon or Dragon Quest
 </li>
 
 <li><strong>High Concept:</strong><br />
-	an RPG where you move around killing/befriending enemies.
+	A shooter where you defeat chickens for now.
 </li>
 
 <li><strong>Theme:</strong><br />
-The theme I used is RPG.
+The theme I used is shooter.
 </li>
 
 <li><strong>Mandated Variety:</strong><br />
@@ -82,9 +87,10 @@ I want my players to have fun roaming around and feeling powerful.
 <li><strong>Gameplay:</strong>
 	</p>
 		Use the arrow keys to move. <br />
-		Z: menu-pauses game right now<br />
-		X: interact<br />
-		C: cancel -creates an enemy right now for debug purposes<br />
+		P: menu<br />
+		Z: fires projectiles (projectile will not move if player is stationary, acting like a landmine)<br />
+		X: generates shield that will damage the chicken over time<br />
+		C: heals for 1/3 of the player's total health<br />
 	</p>
 </li>
 
@@ -105,7 +111,7 @@ I want my players to have fun roaming around and feeling powerful.
 </li>
 
 <li><strong>Target Audience:</strong><br />
-People who enjoy RPGs.
+People who enjoy shooters.
 </li>
 
 <li><strong>Play Time:</strong><br />
